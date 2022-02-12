@@ -5,9 +5,7 @@ import json
 #import simplejson as json
 import uuid
 
-os.environ["AWS_DEFAULT_REGION"] = "us-west-2" #give boto info to connect to aws
-os.environ["AWS_ACCESS_KEY_ID"] = "AKIAQG365STO5WO4VC5V" #my aws account keys
-os.environ["AWS_SECRET_ACCESS_KEY"] = "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"
+import AccessKeys
 
 app = Flask(__name__)
 
