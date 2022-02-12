@@ -85,11 +85,16 @@ def update_user():#update route that removes a given ID
         Key={
             "person_id": id
         },
-        UpdateExpression="set name=:n",
+        UpdateExpression="set #name_attribute=:n, #age_attribute=:a",
         ExpressionAttributeValues={
             ':n': name,
+            ':a': age,
         },
-        ReturnValues="UPDATED_NEW"
+        ExpressionAttributeNames={
+            '#name_attribute': 'name',
+            '#age_attribute': 'age',
+        },
+        ReturnValues = "UPDATED_NEW",
     )
 
     get_people()
