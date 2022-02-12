@@ -67,15 +67,37 @@ def add_person():
 
     return ""
 
-'''
-GET /people 
-=> returns json of all people
-'''
+#--------------------------------------------------
+#curl -X PATCH -H "Content-Type: application/json" --data '{"name":"George","age":19}' "http://127.0.0.1:5000/people?id=92fa9768-7cfe-427f-a849-31bda502c5d5"
+@app.route("/people", methods=["PATCH"])
+def update_user():#update route that removes a given ID
+    print("check 1")
+    person = request.json  # request the json
+    print(person)
+    name = person["name"]  # from the json dictionaries pull out variables
+    age = person["age"]
+    print("check 2")
+    id = request.args.get('id')
+    print("check 3")
+    response = table.update_item(
+        Key={
+            "person_id": id
+        },
+        UpdateExpression="set #name_attribute=:n, #age_attribute=:a",
+        ExpressionAttributeValues={
+            ':n': name,
+            ':a': age,
+        },
+        ExpressionAttributeNames={
+            '#name_attribute': 'name',
+            '#age_attribute': 'age',
+        },
+        ReturnValues = "UPDATED_NEW",
+    )
 
-'''
-DELETE /people?id=<some id here>
-=> delete person with id
-'''
+    get_people()
+    return ""
+
 
 
 def create_table(dynamodb):
