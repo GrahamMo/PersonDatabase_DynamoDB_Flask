@@ -22,26 +22,33 @@ def default():
 
 @app.route("/people", methods = ["GET"])
 def get_people():
+    try:
+        id = request.args.get('person_id')
 
-    response = table.scan()  # scan allows to return all entries in the db
-    data = response['Items']  # this returns the first megabite of data and stores it to a list called data
-    while 'LastEvaluatedKey' in response:  # Pagination will only display the first Megabit of data then the next page of data will start and the Last evaluated key / returned data point
-        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
-        data.extend(response['Items'])  # then it adds the additional data to the list
-    print(data)
+        returned_info = table.get_item(Key={"person_id":id}) #returns everything like response data and status codes
+        result = returned_info["Item"]
 
-    #data is a list and flask needs to return str so convert, but decimals are not JSON serializable so to change non str to str
+    except:
+        response = table.scan()  # scan allows to return all entries in the db
+        data = response['Items']  # this returns the first megabite of data and stores it to a list called data
+        while 'LastEvaluatedKey' in response:  # Pagination will only display the first Megabit of data then the next page of data will start and the Last evaluated key / returned data point
+            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+            data.extend(response['Items'])  # then it adds the additional data to the list
+        print(data)
 
-    #can just use simple json instead if you uncomment from top and remove this logic
-    for i in data: #for each person in the data
-        for key in i: #for each key in the dict
-            if type(i[key]) != str: #if the value is a num
-                i[key] = str(i[key]) # convert the num to a string
+        #data is a list and flask needs to return str so convert, but decimals are not JSON serializable so to change non str to str
+
+        #can just use simple json instead if you uncomment from top and remove this logic
+        for i in data: #for each person in the data
+            for key in i: #for each key in the dict
+                if type(i[key]) != str: #if the value is a num
+                    i[key] = str(i[key]) # convert the num to a string
 
 
-    status_code = Response(response=json.dumps(data), status=200) #convert to str
-    print(status_code)
-    return status_code  # return the master list and successful status code
+        result = Response(response=json.dumps(data), status=200) #convert to str
+        print(result)
+    return result  # return the master list and successful status code
+
 
 @app.route("/people", methods=["DELETE"])
 def delete():#delete route that removes a given ID
